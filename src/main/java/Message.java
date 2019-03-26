@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -8,7 +9,10 @@ class Message {
     private List<Integer> msg;
 
     Message(List<Integer> l) {
-        msg = l;
+        if (l == null)
+            msg = null;
+        else
+            msg = new ArrayList<>(l);
     }
 
     List<Integer> getMsg() {

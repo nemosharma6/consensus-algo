@@ -28,9 +28,8 @@ public class Node implements Runnable {
             sb.append(" ");
         }
 
-        for (int i = 0; i <= links.size(); i++) {
+        for (int i = 0; i <= links.size(); i++)
             values.add(-1);
-        }
 
         values.set(id, val);
 
@@ -63,11 +62,11 @@ public class Node implements Runnable {
 
         if (round == 0) {
 
-            int ct = 0;
             for (Integer i : linkMap.keySet()) {
-                ct++;
-                if (skip.contains(ct)) {
-                    Log.write(name,"Skipping " + ct + " message");
+
+                if (skip.contains(i)) {
+                    Log.write(name, "Skipping " + i + " message");
+                    linkMap.get(i).sendMsg(id, new Message(null));
                     continue;
                 }
 
@@ -77,8 +76,9 @@ public class Node implements Runnable {
         } else {
 
             for (Integer i : linkMap.keySet()) {
+
                 Message msg = linkMap.get(i).readMsg(id);
-                if (msg == null) {
+                if (msg.getMsg() == null) {
                     Log.write(name, "No message received from node-" + i + " in round " + round);
                     continue;
                 }
@@ -90,14 +90,12 @@ public class Node implements Runnable {
                 }
             }
 
-            int ct = 0;
             for (Integer i : linkMap.keySet()) {
-                if (!skip.contains(ct)) {
+                if (!skip.contains(i)) {
                     Message msg = new Message(values);
                     linkMap.get(i).sendMsg(id, msg);
-                }
-
-                ct++;
+                } else
+                    linkMap.get(i).sendMsg(id, new Message(null));
             }
         }
     }

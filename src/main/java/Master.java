@@ -29,31 +29,30 @@ public class Master {
             nodes.add(new Node(i, l, ParseInput.values[i]));
         }
 
-        int msgCount = 1;
-        int prev = 0;
         int msgPerNode = ParseInput.processCount - 1;
-        int drop = ParseInput.dropInterval;
+        int drop = ParseInput.dropInterval + 1;
+        int delivered = 0;
 
         try {
 
             for (int i = 0; i < ParseInput.rounds; i++) {
 
                 for (Node node : nodes) {
-                    if (msgCount - prev + msgPerNode > drop) {
-                        Set<Integer> set = new HashSet<>();
-                        for (int j = 0; j < msgPerNode; j++)
-                            if (msgCount + j - prev == drop) {
-                                set.add(j);
-                                prev = msgCount + j;
-                            }
+                    Set<Integer> set = new HashSet<>();
+                    for (int j = 0; j <= msgPerNode; j++) {
+                        if (j == node.getId())
+                            continue;
+                        delivered++;
+                        if (delivered == drop) {
+                            set.add(j);
+                            delivered = 0;
+                        }
+                    }
 
-                        msgCount += msgPerNode;
-                        System.out.println("Skip List -> " + node.getName() + " round-" + i + " set-" + set.toString());
-                        Log.write(Master.class.getName(), "Skip List -> " + node.getName() + " round-" + i
-                                + " set-" + set.toString());
-                        node.setSkip(set);
-                    } else
-                        msgCount += msgPerNode;
+                    System.out.println("Skip List -> " + node.getName() + " round-" + i + " set-" + set.toString());
+                    Log.write(Master.class.getName(), "Skip List -> " + node.getName() + " round-" + i
+                            + " set-" + set.toString());
+                    node.setSkip(set);
 
                     node.start();
                 }
